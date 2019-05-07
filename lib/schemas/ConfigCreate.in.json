@@ -1,0 +1,39 @@
+{
+    "type": "object",
+    "properties": {
+        "requestBody": {
+            "allOf": [
+                {
+                    "properties": {
+                        "Data": {
+                            "description": "Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-3.2))\nconfig data.\n",
+                            "type": "string"
+                        },
+                        "Labels": {
+                            "additionalProperties": {
+                                "type": "string"
+                            },
+                            "description": "User-defined key/value metadata.",
+                            "type": "object"
+                        },
+                        "Name": {
+                            "description": "User-defined name of the config.",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "example": {
+                        "Data": "VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg==",
+                        "Labels": {
+                            "foo": "bar"
+                        },
+                        "Name": "server.conf"
+                    },
+                    "type": "object"
+                }
+            ]
+        }
+    }
+}

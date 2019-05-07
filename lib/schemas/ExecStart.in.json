@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "requestBody": {
+            "example": {
+                "Detach": false,
+                "Tty": false
+            },
+            "properties": {
+                "Detach": {
+                    "description": "Detach from the command.",
+                    "type": "boolean"
+                },
+                "Tty": {
+                    "description": "Allocate a pseudo-TTY.",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        }
+    }
+}

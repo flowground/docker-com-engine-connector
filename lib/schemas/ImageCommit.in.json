@@ -1,0 +1,214 @@
+{
+    "type": "object",
+    "properties": {
+        "container": {
+            "type": "string"
+        },
+        "repo": {
+            "type": "string"
+        },
+        "tag": {
+            "type": "string"
+        },
+        "comment": {
+            "type": "string"
+        },
+        "author": {
+            "type": "string"
+        },
+        "pause": {
+            "type": "boolean",
+            "default": true
+        },
+        "changes": {
+            "type": "string"
+        },
+        "requestBody": {
+            "description": "Configuration for a container that is portable between hosts",
+            "properties": {
+                "ArgsEscaped": {
+                    "description": "Command is already escaped (Windows only)",
+                    "type": "boolean"
+                },
+                "AttachStderr": {
+                    "default": true,
+                    "description": "Whether to attach to `stderr`.",
+                    "type": "boolean"
+                },
+                "AttachStdin": {
+                    "default": false,
+                    "description": "Whether to attach to `stdin`.",
+                    "type": "boolean"
+                },
+                "AttachStdout": {
+                    "default": true,
+                    "description": "Whether to attach to `stdout`.",
+                    "type": "boolean"
+                },
+                "Cmd": {
+                    "description": "Command to run specified as a string or an array of strings.",
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "Domainname": {
+                    "description": "The domain name to use for the container.",
+                    "type": "string"
+                },
+                "Entrypoint": {
+                    "description": "The entry point for the container as a string or an array of strings.\n\nIf the array consists of exactly one empty string (`[\"\"]`) then the entry point is reset to system default (i.e., the entry point used by docker when there is no `ENTRYPOINT` instruction in the `Dockerfile`).\n",
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "Env": {
+                    "description": "A list of environment variables to set inside the container in the form `[\"VAR=value\", ...]`. A variable without `=` is removed from the environment, rather than to have an empty value.\n",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "ExposedPorts": {
+                    "additionalProperties": {
+                        "default": {},
+                        "enum": [
+                            {}
+                        ],
+                        "type": "object"
+                    },
+                    "description": "An object mapping ports to an empty object in the form:\n\n`{\"<port>/<tcp|udp>\": {}}`\n",
+                    "type": "object"
+                },
+                "Healthcheck": {
+                    "description": "A test to perform to check that the container is healthy.",
+                    "properties": {
+                        "Interval": {
+                            "description": "The time to wait between checks in nanoseconds. It should be 0 or at least 1000000 (1 ms). 0 means inherit.",
+                            "type": "integer"
+                        },
+                        "Retries": {
+                            "description": "The number of consecutive failures needed to consider a container as unhealthy. 0 means inherit.",
+                            "type": "integer"
+                        },
+                        "StartPeriod": {
+                            "description": "Start period for the container to initialize before starting health-retries countdown in nanoseconds. It should be 0 or at least 1000000 (1 ms). 0 means inherit.",
+                            "type": "integer"
+                        },
+                        "Test": {
+                            "description": "The test to perform. Possible values are:\n\n- `[]` inherit healthcheck from image or parent image\n- `[\"NONE\"]` disable healthcheck\n- `[\"CMD\", args...]` exec arguments directly\n- `[\"CMD-SHELL\", command]` run command with system's default shell\n",
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "Timeout": {
+                            "description": "The time to wait before considering the check to have hung. It should be 0 or at least 1000000 (1 ms). 0 means inherit.",
+                            "type": "integer"
+                        }
+                    },
+                    "type": "object"
+                },
+                "Hostname": {
+                    "description": "The hostname to use for the container, as a valid RFC 1123 hostname.",
+                    "type": "string"
+                },
+                "Image": {
+                    "description": "The name of the image to use when creating the container",
+                    "type": "string"
+                },
+                "Labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "User-defined key/value metadata.",
+                    "type": "object"
+                },
+                "MacAddress": {
+                    "description": "MAC address of the container.",
+                    "type": "string"
+                },
+                "NetworkDisabled": {
+                    "description": "Disable networking for the container.",
+                    "type": "boolean"
+                },
+                "OnBuild": {
+                    "description": "`ONBUILD` metadata that were defined in the image's `Dockerfile`.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "OpenStdin": {
+                    "default": false,
+                    "description": "Open `stdin`",
+                    "type": "boolean"
+                },
+                "Shell": {
+                    "description": "Shell for when `RUN`, `CMD`, and `ENTRYPOINT` uses a shell.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "StdinOnce": {
+                    "default": false,
+                    "description": "Close `stdin` after one attached client disconnects",
+                    "type": "boolean"
+                },
+                "StopSignal": {
+                    "default": "SIGTERM",
+                    "description": "Signal to stop a container as a string or unsigned integer.",
+                    "type": "string"
+                },
+                "StopTimeout": {
+                    "default": 10,
+                    "description": "Timeout to stop a container in seconds.",
+                    "type": "integer"
+                },
+                "Tty": {
+                    "default": false,
+                    "description": "Attach standard streams to a TTY, including `stdin` if it is not closed.",
+                    "type": "boolean"
+                },
+                "User": {
+                    "description": "The user that commands are run as inside the container.",
+                    "type": "string"
+                },
+                "Volumes": {
+                    "description": "An object mapping mount point paths inside the container to empty objects.",
+                    "properties": {
+                        "additionalProperties": {
+                            "default": {},
+                            "enum": [
+                                {}
+                            ],
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                },
+                "WorkingDir": {
+                    "description": "The working directory for commands to run in.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    }
+}

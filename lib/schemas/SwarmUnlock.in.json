@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+        "requestBody": {
+            "example": {
+                "UnlockKey": "SWMKEY-1-7c37Cc8654o6p38HnroywCi19pllOnGtbdZEgtKxZu8"
+            },
+            "properties": {
+                "UnlockKey": {
+                    "description": "The swarm's unlock key.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    }
+}

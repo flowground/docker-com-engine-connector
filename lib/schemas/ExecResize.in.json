@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "h": {
+            "type": "integer"
+        },
+        "w": {
+            "type": "integer"
+        }
+    }
+}

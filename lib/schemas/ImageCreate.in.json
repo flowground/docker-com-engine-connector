@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "properties": {
+        "fromImage": {
+            "type": "string"
+        },
+        "fromSrc": {
+            "type": "string"
+        },
+        "repo": {
+            "type": "string"
+        },
+        "tag": {
+            "type": "string"
+        },
+        "requestBody": {
+            "type": "string"
+        },
+        "X_Registry_Auth": {
+            "type": "string"
+        }
+    }
+}

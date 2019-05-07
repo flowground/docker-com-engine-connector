@@ -1,0 +1,13 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "stream": {
+            "type": "boolean",
+            "default": true
+        }
+    }
+}

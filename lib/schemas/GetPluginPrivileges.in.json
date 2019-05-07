@@ -1,0 +1,9 @@
+{
+    "type": "object",
+    "properties": {
+        "remote": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

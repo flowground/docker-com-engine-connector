@@ -1,0 +1,60 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "required": true,
+            "type": "string"
+        },
+        "remote": {
+            "required": true,
+            "type": "string"
+        },
+        "requestBody": {
+            "example": [
+                {
+                    "Description": "",
+                    "Name": "network",
+                    "Value": [
+                        "host"
+                    ]
+                },
+                {
+                    "Description": "",
+                    "Name": "mount",
+                    "Value": [
+                        "/data"
+                    ]
+                },
+                {
+                    "Description": "",
+                    "Name": "device",
+                    "Value": [
+                        "/dev/cpu_dma_latency"
+                    ]
+                }
+            ],
+            "items": {
+                "description": "Describes a permission accepted by the user upon installing the plugin.",
+                "properties": {
+                    "Description": {
+                        "type": "string"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Value": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "array"
+        },
+        "X_Registry_Auth": {
+            "type": "string"
+        }
+    }
+}

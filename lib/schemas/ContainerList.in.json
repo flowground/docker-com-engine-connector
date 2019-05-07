@@ -1,0 +1,19 @@
+{
+    "type": "object",
+    "properties": {
+        "all": {
+            "type": "boolean",
+            "default": false
+        },
+        "limit": {
+            "type": "integer"
+        },
+        "size": {
+            "type": "boolean",
+            "default": false
+        },
+        "filters": {
+            "type": "string"
+        }
+    }
+}

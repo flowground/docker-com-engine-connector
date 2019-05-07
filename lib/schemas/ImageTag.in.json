@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "required": true,
+            "type": "string"
+        },
+        "repo": {
+            "type": "string"
+        },
+        "tag": {
+            "type": "string"
+        }
+    }
+}

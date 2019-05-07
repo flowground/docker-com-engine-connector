@@ -1,0 +1,16 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "verbose": {
+            "type": "boolean",
+            "default": false
+        },
+        "scope": {
+            "type": "string"
+        }
+    }
+}

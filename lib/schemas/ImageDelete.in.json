@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "required": true,
+            "type": "string"
+        },
+        "force": {
+            "type": "boolean",
+            "default": false
+        },
+        "noprune": {
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

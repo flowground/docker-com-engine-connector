@@ -1,0 +1,16 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "required": true,
+            "type": "string"
+        },
+        "tag": {
+            "type": "string"
+        },
+        "X_Registry_Auth": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

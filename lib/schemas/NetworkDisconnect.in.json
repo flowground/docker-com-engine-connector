@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "requestBody": {
+            "properties": {
+                "Container": {
+                    "description": "The ID or name of the container to disconnect from the network.",
+                    "type": "string"
+                },
+                "Force": {
+                    "description": "Force the container to disconnect from the network.",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        }
+    }
+}

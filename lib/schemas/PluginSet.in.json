@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "required": true,
+            "type": "string"
+        },
+        "requestBody": {
+            "example": [
+                "DEBUG=1"
+            ],
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    }
+}

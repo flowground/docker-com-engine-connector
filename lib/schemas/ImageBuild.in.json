@@ -1,0 +1,87 @@
+{
+    "type": "object",
+    "properties": {
+        "dockerfile": {
+            "type": "string",
+            "default": "Dockerfile"
+        },
+        "t": {
+            "type": "string"
+        },
+        "extrahosts": {
+            "type": "string"
+        },
+        "remote": {
+            "type": "string"
+        },
+        "q": {
+            "type": "boolean",
+            "default": false
+        },
+        "nocache": {
+            "type": "boolean",
+            "default": false
+        },
+        "cachefrom": {
+            "type": "string"
+        },
+        "pull": {
+            "type": "string"
+        },
+        "rm": {
+            "type": "boolean",
+            "default": true
+        },
+        "forcerm": {
+            "type": "boolean",
+            "default": false
+        },
+        "memory": {
+            "type": "integer"
+        },
+        "memswap": {
+            "type": "integer"
+        },
+        "cpushares": {
+            "type": "integer"
+        },
+        "cpusetcpus": {
+            "type": "string"
+        },
+        "cpuperiod": {
+            "type": "integer"
+        },
+        "cpuquota": {
+            "type": "integer"
+        },
+        "buildargs": {
+            "type": "integer"
+        },
+        "shmsize": {
+            "type": "integer"
+        },
+        "squash": {
+            "type": "boolean"
+        },
+        "labels": {
+            "type": "string"
+        },
+        "networkmode": {
+            "type": "string"
+        },
+        "requestBody": {
+            "format": "binary",
+            "type": "string"
+        },
+        "Content_type": {
+            "type": "string",
+            "enum": [
+                "application/x-tar"
+            ],
+            "default": "application/x-tar"
+        },
+        "X_Registry_Config": {
+            "type": "string"
+        }
+    }
+}

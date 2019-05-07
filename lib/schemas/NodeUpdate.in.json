@@ -1,0 +1,58 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "version": {
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+        },
+        "requestBody": {
+            "example": {
+                "Availability": "active",
+                "Labels": {
+                    "foo": "bar"
+                },
+                "Name": "node-name",
+                "Role": "manager"
+            },
+            "properties": {
+                "Availability": {
+                    "description": "Availability of the node.",
+                    "enum": [
+                        "active",
+                        "pause",
+                        "drain"
+                    ],
+                    "example": "active",
+                    "type": "string"
+                },
+                "Labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "User-defined key/value metadata.",
+                    "type": "object"
+                },
+                "Name": {
+                    "description": "Name for the node.",
+                    "example": "my-node",
+                    "type": "string"
+                },
+                "Role": {
+                    "description": "Role of the node.",
+                    "enum": [
+                        "worker",
+                        "manager"
+                    ],
+                    "example": "manager",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "properties": {
+        "since": {
+            "type": "string"
+        },
+        "until": {
+            "type": "string"
+        },
+        "filters": {
+            "type": "string"
+        }
+    }
+}

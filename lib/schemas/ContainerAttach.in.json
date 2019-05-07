@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "detachKeys": {
+            "type": "string"
+        },
+        "logs": {
+            "type": "boolean",
+            "default": false
+        },
+        "stream": {
+            "type": "boolean",
+            "default": false
+        },
+        "stdin": {
+            "type": "boolean",
+            "default": false
+        },
+        "stdout": {
+            "type": "boolean",
+            "default": false
+        },
+        "stderr": {
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

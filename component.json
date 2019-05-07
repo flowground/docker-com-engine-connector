@@ -1,0 +1,2059 @@
+{
+    "title": "Docker Engine",
+    "description": "The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.\n\nMost of the client's commands map directly to API endpoints (e.g. `docker ps` is `GET /containers/json`). The notable exception is running containers, which consists of several API calls.\n\n# Errors\n\nThe API uses standard HTTP status codes to indicate the success or failure of the API call. The body of the response will be JSON in the following format:\n\n```\n{\n  \"message\": \"page not found\"\n}\n```\n\n# Versioning\n\nThe API is usually changed in each release of Docker, so API calls are versioned to ensure that clients don't break.\n\nFor Docker Engine 17.09, the API version is 1.32. To lock to this version, you prefix the URL with `/v1.32`. For example, calling `/info` is the same as calling `/v1.32/info`.\n\nEngine releases in the near future should support this version of the API, so your client will continue to work even if it is talking to a newer Engine.\n\nIn previous versions of Docker, it was possible to access the API without providing a version. This behaviour is now deprecated will be removed in a future version of Docker.\n\nThe API uses an open schema model, which means server may add extra properties to responses. Likewise, the server will ignore any extra query parameters and request body properties. When you write clients, you need to ignore additional properties in responses to ensure they do not break when talking to newer Docker daemons.\n\nThis documentation is for version 1.33 of the API. Use this table to find documentation for previous versions of the API:\n\nDocker version  | API version | Changes\n----------------|-------------|---------\n17.09.x | [1.31](https://docs.docker.com/engine/api/v1.32/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-32-api-changes)\n17.07.x | [1.31](https://docs.docker.com/engine/api/v1.31/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-31-api-changes)\n17.06.x | [1.30](https://docs.docker.com/engine/api/v1.30/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-30-api-changes)\n17.05.x | [1.29](https://docs.docker.com/engine/api/v1.29/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-29-api-changes)\n17.04.x | [1.28](https://docs.docker.com/engine/api/v1.28/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-28-api-changes)\n17.03.1 | [1.27](https://docs.docker.com/engine/api/v1.27/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-27-api-changes)\n1.13.1 & 17.03.0 | [1.26](https://docs.docker.com/engine/api/v1.26/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-26-api-changes)\n1.13.0 | [1.25](https://docs.docker.com/engine/api/v1.25/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-25-api-changes)\n1.12.x | [1.24](https://docs.docker.com/engine/api/v1.24/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-24-api-changes)\n1.11.x | [1.23](https://docs.docker.com/engine/api/v1.23/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-23-api-changes)\n1.10.x | [1.22](https://docs.docker.com/engine/api/v1.22/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-22-api-changes)\n1.9.x | [1.21](https://docs.docker.com/engine/api/v1.21/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-21-api-changes)\n1.8.x | [1.20](https://docs.docker.com/engine/api/v1.20/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-20-api-changes)\n1.7.x | [1.19](https://docs.docker.com/engine/api/v1.19/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-19-api-changes)\n1.6.x | [1.18](https://docs.docker.com/engine/api/v1.18/) | [API changes](https://docs.docker.com/engine/api/version-history/#v1-18-api-changes)\n\n# Authentication\n\nAuthentication for registries is handled client side. The client has to send authentication details to various endpoints that need to communicate with registries, such as `POST /images/(name)/push`. These are sent as `X-Registry-Auth` header as a Base64 encoded (JSON) string with the following structure:\n\n```\n{\n  \"username\": \"string\",\n  \"password\": \"string\",\n  \"email\": \"string\",\n  \"serveraddress\": \"string\"\n}\n```\n\nThe `serveraddress` is a domain/IP without a protocol. Throughout this structure, double quotes are required.\n\nIf you have already got an identity token from the [`/auth` endpoint](#operation/SystemAuth), you can just pass this instead of credentials:\n\n```\n{\n  \"identitytoken\": \"9cbaf023786cd7...\"\n}\n```\n",
+    "docsUrl": "",
+    "url": "https://api.apis.guru/v2/specs/docker.com/engine/1.33/swagger.json",
+    "envVars": {},
+    "credentials": {
+        "fields": {
+            "server": {
+                "label": "Server",
+                "viewClass": "SelectView",
+                "model": [
+                    "http://docker.local/v1.33",
+                    "https://docker.local/v1.33",
+                    "--- Custom URL"
+                ],
+                "required": true
+            },
+            "otherServer": {
+                "label": "Custom Server URL",
+                "viewClass": "TextFieldView"
+            }
+        }
+    },
+    "triggers": {
+        "startFlow": {
+            "main": "./lib/triggers/startFlow.js",
+            "type": "polling",
+            "title": "Start Flow",
+            "fields": {}
+        }
+    },
+    "actions": {
+        "SystemPing": {
+            "main": "./lib/actions/SystemPing.js",
+            "title": "Ping",
+            "description": "This is a dummy endpoint you can use to test if the server is accessible.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SystemPing.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SystemAuth": {
+            "main": "./lib/actions/SystemAuth.js",
+            "title": "Check auth configuration",
+            "description": "Validate credentials for a registry and, if available, get an identity token for accessing the registry without password.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SystemAuth.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageBuild": {
+            "main": "./lib/actions/ImageBuild.js",
+            "title": "Build an image",
+            "description": "Build an image from a tar archive with a `Dockerfile` in it.\n\nThe `Dockerfile` specifies how the image is built from the tar archive. It is typically in the archive's root, but can be at a different path or have a different name by specifying the `dockerfile` parameter. [See the `Dockerfile` reference for more information](https://docs.docker.com/engine/reference/builder/).\n\nThe Docker daemon performs a preliminary validation of the `Dockerfile` before starting the build, and returns an error if the syntax is incorrect. After that, each instruction is run one-by-one until the ID of the new image is output.\n\nThe build is canceled if the client drops the connection by quitting or being killed.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/octet-stream": "application/octet-stream",
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageBuild.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "BuildPrune": {
+            "main": "./lib/actions/BuildPrune.js",
+            "title": "Delete builder cache",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/BuildPrune.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageCommit": {
+            "main": "./lib/actions/ImageCommit.js",
+            "title": "Create a new image from a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageCommit.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ConfigList": {
+            "main": "./lib/actions/ConfigList.js",
+            "title": "List configs",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ConfigList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ConfigCreate": {
+            "main": "./lib/actions/ConfigCreate.js",
+            "title": "Create a config",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ConfigCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ConfigDelete": {
+            "main": "./lib/actions/ConfigDelete.js",
+            "title": "Delete a config",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ConfigDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ConfigInspect": {
+            "main": "./lib/actions/ConfigInspect.js",
+            "title": "Inspect a config",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ConfigInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ConfigUpdate": {
+            "main": "./lib/actions/ConfigUpdate.js",
+            "title": "Update a Config",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ConfigUpdate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerCreate": {
+            "main": "./lib/actions/ContainerCreate.js",
+            "title": "Create a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "application/octet-stream": "application/octet-stream",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerList": {
+            "main": "./lib/actions/ContainerList.js",
+            "title": "List containers",
+            "description": "Returns a list of containers. For details on the format, see [the inspect endpoint](#operation/ContainerInspect).\n\nNote that it uses a different, smaller representation of a container than inspecting a single container. For example,\nthe list of linked containers is not propagated .\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerPrune": {
+            "main": "./lib/actions/ContainerPrune.js",
+            "title": "Delete stopped containers",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerPrune.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerDelete": {
+            "main": "./lib/actions/ContainerDelete.js",
+            "title": "Remove a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerArchive": {
+            "main": "./lib/actions/ContainerArchive.js",
+            "title": "Get an archive of a filesystem resource in a container",
+            "description": "Get a tar archive of a resource in the filesystem of container id.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerArchive.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerArchiveInfo": {
+            "main": "./lib/actions/ContainerArchiveInfo.js",
+            "title": "Get information about files in a container",
+            "description": "A response header `X-Docker-Container-Path-Stat` is return containing a base64 - encoded JSON object with some filesystem header information about the path.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerArchiveInfo.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PutContainerArchive": {
+            "main": "./lib/actions/PutContainerArchive.js",
+            "title": "Extract an archive of files or folders to a directory in a container",
+            "description": "Upload a tar archive to be extracted to a path in the filesystem of container id.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/x-tar": "application/x-tar",
+                        "application/octet-stream": "application/octet-stream",
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PutContainerArchive.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerAttach": {
+            "main": "./lib/actions/ContainerAttach.js",
+            "title": "Attach to a container",
+            "description": "Attach to a container to read its output or send it input. You can attach to the same container multiple times and you can reattach to containers that have been detached.\n\nEither the `stream` or `logs` parameter must be `true` for this endpoint to do anything.\n\nSee [the documentation for the `docker attach` command](https://docs.docker.com/engine/reference/commandline/attach/) for more details.\n\n### Hijacking\n\nThis endpoint hijacks the HTTP connection to transport `stdin`, `stdout`, and `stderr` on the same socket.\n\nThis is the response from the daemon for an attach request:\n\n```\nHTTP/1.1 200 OK\nContent-Type: application/vnd.docker.raw-stream\n\n[STREAM]\n```\n\nAfter the headers and two new lines, the TCP connection can now be used for raw, bidirectional communication between the client and server.\n\nTo hint potential proxies about connection hijacking, the Docker client can also optionally send connection upgrade headers.\n\nFor example, the client sends this request to upgrade the connection:\n\n```\nPOST /containers/16253994b7c4/attach?stream=1&stdout=1 HTTP/1.1\nUpgrade: tcp\nConnection: Upgrade\n```\n\nThe Docker daemon will respond with a `101 UPGRADED` response, and will similarly follow with the raw stream:\n\n```\nHTTP/1.1 101 UPGRADED\nContent-Type: application/vnd.docker.raw-stream\nConnection: Upgrade\nUpgrade: tcp\n\n[STREAM]\n```\n\n### Stream format\n\nWhen the TTY setting is disabled in [`POST /containers/create`](#operation/ContainerCreate), the stream over the hijacked connected is multiplexed to separate out `stdout` and `stderr`. The stream consists of a series of frames, each containing a header and a payload.\n\nThe header contains the information which the stream writes (`stdout` or `stderr`). It also contains the size of the associated frame encoded in the last four bytes (`uint32`).\n\nIt is encoded on the first eight bytes like this:\n\n```go\nheader := [8]byte{STREAM_TYPE, 0, 0, 0, SIZE1, SIZE2, SIZE3, SIZE4}\n```\n\n`STREAM_TYPE` can be:\n\n- 0: `stdin` (is written on `stdout`)\n- 1: `stdout`\n- 2: `stderr`\n\n`SIZE1, SIZE2, SIZE3, SIZE4` are the four bytes of the `uint32` size encoded as big endian.\n\nFollowing the header is the payload, which is the specified number of bytes of `STREAM_TYPE`.\n\nThe simplest way to implement this protocol is the following:\n\n1. Read 8 bytes.\n2. Choose `stdout` or `stderr` depending on the first byte.\n3. Extract the frame size from the last four bytes.\n4. Read the extracted size and output it on the correct output.\n5. Goto 1.\n\n### Stream format when using a TTY\n\nWhen the TTY setting is enabled in [`POST /containers/create`](#operation/ContainerCreate), the stream is not multiplexed. The data exchanged over the hijacked connection is simply the raw data from the process PTY and client's `stdin`.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerAttach.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerAttachWebsocket": {
+            "main": "./lib/actions/ContainerAttachWebsocket.js",
+            "title": "Attach to a container via a websocket",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerAttachWebsocket.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerChanges": {
+            "main": "./lib/actions/ContainerChanges.js",
+            "title": "Get changes on a container's filesystem",
+            "description": "Returns which files in a container's filesystem have been added, deleted,\nor modified. The `Kind` of modification can be one of:\n\n- `0`: Modified\n- `1`: Added\n- `2`: Deleted\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerChanges.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerExec": {
+            "main": "./lib/actions/ContainerExec.js",
+            "title": "Create an exec instance",
+            "description": "Run a command inside a running container.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerExec.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerExport": {
+            "main": "./lib/actions/ContainerExport.js",
+            "title": "Export a container",
+            "description": "Export the contents of a container as a tarball.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerExport.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerInspect": {
+            "main": "./lib/actions/ContainerInspect.js",
+            "title": "Inspect a container",
+            "description": "Return low-level information about a container.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerKill": {
+            "main": "./lib/actions/ContainerKill.js",
+            "title": "Kill a container",
+            "description": "Send a POSIX signal to a container, defaulting to killing to the container.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerKill.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerLogs": {
+            "main": "./lib/actions/ContainerLogs.js",
+            "title": "Get container logs",
+            "description": "Get `stdout` and `stderr` logs from a container.\n\nNote: This endpoint works only for containers with the `json-file` or `journald` logging driver.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerLogs.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerPause": {
+            "main": "./lib/actions/ContainerPause.js",
+            "title": "Pause a container",
+            "description": "Use the cgroups freezer to suspend all processes in a container.\n\nTraditionally, when suspending a process the `SIGSTOP` signal is used, which is observable by the process being suspended. With the cgroups freezer the process is unaware, and unable to capture, that it is being suspended, and subsequently resumed.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerPause.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerRename": {
+            "main": "./lib/actions/ContainerRename.js",
+            "title": "Rename a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerRename.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerResize": {
+            "main": "./lib/actions/ContainerResize.js",
+            "title": "Resize a container TTY",
+            "description": "Resize the TTY for a container. You must restart the container for the resize to take effect.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerResize.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerRestart": {
+            "main": "./lib/actions/ContainerRestart.js",
+            "title": "Restart a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerRestart.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerStart": {
+            "main": "./lib/actions/ContainerStart.js",
+            "title": "Start a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerStart.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerStats": {
+            "main": "./lib/actions/ContainerStats.js",
+            "title": "Get container stats based on resource usage",
+            "description": "This endpoint returns a live stream of a container's resource usage\nstatistics.\n\nThe `precpu_stats` is the CPU statistic of last read, which is used\nfor calculating the CPU usage percentage. It is not the same as the\n`cpu_stats` field.\n\nIf either `precpu_stats.online_cpus` or `cpu_stats.online_cpus` is\nnil then for compatibility with older daemons the length of the\ncorresponding `cpu_usage.percpu_usage` array should be used.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerStats.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerStop": {
+            "main": "./lib/actions/ContainerStop.js",
+            "title": "Stop a container",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerStop.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerTop": {
+            "main": "./lib/actions/ContainerTop.js",
+            "title": "List processes running inside a container",
+            "description": "On Unix systems, this is done by running the `ps` command. This endpoint is not supported on Windows.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerTop.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerUnpause": {
+            "main": "./lib/actions/ContainerUnpause.js",
+            "title": "Unpause a container",
+            "description": "Resume a container which has been paused.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerUnpause.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerUpdate": {
+            "main": "./lib/actions/ContainerUpdate.js",
+            "title": "Update a container",
+            "description": "Change various configuration options of a container without having to recreate it.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerUpdate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ContainerWait": {
+            "main": "./lib/actions/ContainerWait.js",
+            "title": "Wait for a container",
+            "description": "Block until a container stops, then returns the exit code.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ContainerWait.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "DistributionInspect": {
+            "main": "./lib/actions/DistributionInspect.js",
+            "title": "Get image information from the registry",
+            "description": "Return image digest and platform information by contacting the registry.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/DistributionInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SystemEvents": {
+            "main": "./lib/actions/SystemEvents.js",
+            "title": "Monitor events",
+            "description": "Stream real-time events from the server.\n\nVarious objects within Docker report events when something happens to them.\n\nContainers report these events: `attach`, `commit`, `copy`, `create`, `destroy`, `detach`, `die`, `exec_create`, `exec_detach`, `exec_start`, `export`, `health_status`, `kill`, `oom`, `pause`, `rename`, `resize`, `restart`, `start`, `stop`, `top`, `unpause`, and `update`\n\nImages report these events: `delete`, `import`, `load`, `pull`, `push`, `save`, `tag`, and `untag`\n\nVolumes report these events: `create`, `mount`, `unmount`, and `destroy`\n\nNetworks report these events: `create`, `connect`, `disconnect`, `destroy`, `update`, and `remove`\n\nThe Docker daemon reports these events: `reload`\n\nServices report these events: `create`, `update`, and `remove`\n\nNodes report these events: `create`, `update`, and `remove`\n\nSecrets report these events: `create`, `update`, and `remove`\n\nConfigs report these events: `create`, `update`, and `remove`\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SystemEvents.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ExecInspect": {
+            "main": "./lib/actions/ExecInspect.js",
+            "title": "Inspect an exec instance",
+            "description": "Return low-level information about an exec instance.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ExecInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ExecResize": {
+            "main": "./lib/actions/ExecResize.js",
+            "title": "Resize an exec instance",
+            "description": "Resize the TTY session used by an exec instance. This endpoint only works if `tty` was specified as part of creating and starting the exec instance.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ExecResize.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ExecStart": {
+            "main": "./lib/actions/ExecStart.js",
+            "title": "Start an exec instance",
+            "description": "Starts a previously set up exec instance. If detach is true, this endpoint returns immediately after starting the command. Otherwise, it sets up an interactive session with the command.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ExecStart.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageCreate": {
+            "main": "./lib/actions/ImageCreate.js",
+            "title": "Create an image",
+            "description": "Create an image by either pulling it from a registry or importing it.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "text/plain": "text/plain",
+                        "application/octet-stream": "application/octet-stream",
+                        "application/json": "application/json"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageGetAll": {
+            "main": "./lib/actions/ImageGetAll.js",
+            "title": "Export several images",
+            "description": "Get a tarball containing all images and metadata for several image repositories.\n\nFor each value of the `names` parameter: if it is a specific name and tag (e.g. `ubuntu:latest`), then only that image (and its parents) are returned; if it is an image ID, similarly only that image (and its parents) are returned and there would be no names referenced in the 'repositories' file for this image ID.\n\nFor details on the format, see [the export image endpoint](#operation/ImageGet).\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageGetAll.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageList": {
+            "main": "./lib/actions/ImageList.js",
+            "title": "List Images",
+            "description": "Returns a list of images on the server. Note that it uses a different, smaller representation of an image than inspecting a single image.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageLoad": {
+            "main": "./lib/actions/ImageLoad.js",
+            "title": "Import images",
+            "description": "Load a set of images and tags into a repository.\n\nFor details on the format, see [the export image endpoint](#operation/ImageGet).\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/x-tar": "application/x-tar",
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageLoad.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImagePrune": {
+            "main": "./lib/actions/ImagePrune.js",
+            "title": "Delete unused images",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImagePrune.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageSearch": {
+            "main": "./lib/actions/ImageSearch.js",
+            "title": "Search images",
+            "description": "Search for an image on Docker Hub.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageSearch.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageDelete": {
+            "main": "./lib/actions/ImageDelete.js",
+            "title": "Remove an image",
+            "description": "Remove an image, along with any untagged parent images that were\nreferenced by that image.\n\nImages can't be removed if they have descendant images, are being\nused by a running container or are being used by a build.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageGet": {
+            "main": "./lib/actions/ImageGet.js",
+            "title": "Export an image",
+            "description": "Get a tarball containing all images and metadata for a repository.\n\nIf `name` is a specific name and tag (e.g. `ubuntu:latest`), then only that image (and its parents) are returned. If `name` is an image ID, similarly only that image (and its parents) are returned, but with the exclusion of the `repositories` file in the tarball, as there were no image names referenced.\n\n### Image tarball format\n\nAn image tarball contains one directory per image layer (named using its long ID), each containing these files:\n\n- `VERSION`: currently `1.0` - the file format version\n- `json`: detailed layer information, similar to `docker inspect layer_id`\n- `layer.tar`: A tarfile containing the filesystem changes in this layer\n\nThe `layer.tar` file contains `aufs` style `.wh..wh.aufs` files and directories for storing attribute changes and deletions.\n\nIf the tarball defines a repository, the tarball should also include a `repositories` file at the root that contains a list of repository and tag names mapped to layer IDs.\n\n```json\n{\n  \"hello-world\": {\n    \"latest\": \"565a9d68a73f6706862bfe8409a7f659776d4d60a8d096eb4a3cbce6999cc2a1\"\n  }\n}\n```\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageGet.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageHistory": {
+            "main": "./lib/actions/ImageHistory.js",
+            "title": "Get the history of an image",
+            "description": "Return parent layers of an image.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageHistory.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageInspect": {
+            "main": "./lib/actions/ImageInspect.js",
+            "title": "Inspect an image",
+            "description": "Return low-level information about an image.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImagePush": {
+            "main": "./lib/actions/ImagePush.js",
+            "title": "Push an image",
+            "description": "Push an image to a registry.\n\nIf you wish to push an image on to a private registry, that image must already have a tag which references the registry. For example, `registry.example.com/myimage:latest`.\n\nThe push is cancelled if the HTTP connection is closed.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImagePush.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ImageTag": {
+            "main": "./lib/actions/ImageTag.js",
+            "title": "Tag an image",
+            "description": "Tag an image so that it becomes part of a repository.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ImageTag.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SystemInfo": {
+            "main": "./lib/actions/SystemInfo.js",
+            "title": "Get system information",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SystemInfo.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkList": {
+            "main": "./lib/actions/NetworkList.js",
+            "title": "List networks",
+            "description": "Returns a list of networks. For details on the format, see [the network inspect endpoint](#operation/NetworkInspect).\n\nNote that it uses a different, smaller representation of a network than inspecting a single network. For example,\nthe list of containers attached to the network is not propagated in API versions 1.28 and up.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkCreate": {
+            "main": "./lib/actions/NetworkCreate.js",
+            "title": "Create a network",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkPrune": {
+            "main": "./lib/actions/NetworkPrune.js",
+            "title": "Delete unused networks",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkPrune.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkDelete": {
+            "main": "./lib/actions/NetworkDelete.js",
+            "title": "Remove a network",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkInspect": {
+            "main": "./lib/actions/NetworkInspect.js",
+            "title": "Inspect a network",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkConnect": {
+            "main": "./lib/actions/NetworkConnect.js",
+            "title": "Connect a container to a network",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/octet-stream": "application/octet-stream",
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkConnect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NetworkDisconnect": {
+            "main": "./lib/actions/NetworkDisconnect.js",
+            "title": "Disconnect a container from a network",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NetworkDisconnect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NodeList": {
+            "main": "./lib/actions/NodeList.js",
+            "title": "List nodes",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NodeList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NodeDelete": {
+            "main": "./lib/actions/NodeDelete.js",
+            "title": "Delete a node",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NodeDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NodeInspect": {
+            "main": "./lib/actions/NodeInspect.js",
+            "title": "Inspect a node",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NodeInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "NodeUpdate": {
+            "main": "./lib/actions/NodeUpdate.js",
+            "title": "Update a node",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/NodeUpdate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginList": {
+            "main": "./lib/actions/PluginList.js",
+            "title": "List plugins",
+            "description": "Returns information about installed plugins.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginCreate": {
+            "main": "./lib/actions/PluginCreate.js",
+            "title": "Create a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/x-tar": "application/x-tar",
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "GetPluginPrivileges": {
+            "main": "./lib/actions/GetPluginPrivileges.js",
+            "title": "Get plugin privileges",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/GetPluginPrivileges.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginPull": {
+            "main": "./lib/actions/PluginPull.js",
+            "title": "Install a plugin",
+            "description": "Pulls and installs a plugin. After the plugin is installed, it can be enabled using the [`POST /plugins/{name}/enable` endpoint](#operation/PostPluginsEnable).\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginPull.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginDelete": {
+            "main": "./lib/actions/PluginDelete.js",
+            "title": "Remove a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginDisable": {
+            "main": "./lib/actions/PluginDisable.js",
+            "title": "Disable a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginDisable.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginEnable": {
+            "main": "./lib/actions/PluginEnable.js",
+            "title": "Enable a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginEnable.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginInspect": {
+            "main": "./lib/actions/PluginInspect.js",
+            "title": "Inspect a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginPush": {
+            "main": "./lib/actions/PluginPush.js",
+            "title": "Push a plugin",
+            "description": "Push a plugin to the registry.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginPush.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginSet": {
+            "main": "./lib/actions/PluginSet.js",
+            "title": "Configure a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginSet.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "PluginUpgrade": {
+            "main": "./lib/actions/PluginUpgrade.js",
+            "title": "Upgrade a plugin",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/PluginUpgrade.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SecretList": {
+            "main": "./lib/actions/SecretList.js",
+            "title": "List secrets",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SecretList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SecretCreate": {
+            "main": "./lib/actions/SecretCreate.js",
+            "title": "Create a secret",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SecretCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SecretDelete": {
+            "main": "./lib/actions/SecretDelete.js",
+            "title": "Delete a secret",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SecretDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SecretInspect": {
+            "main": "./lib/actions/SecretInspect.js",
+            "title": "Inspect a secret",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SecretInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SecretUpdate": {
+            "main": "./lib/actions/SecretUpdate.js",
+            "title": "Update a Secret",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SecretUpdate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ServiceList": {
+            "main": "./lib/actions/ServiceList.js",
+            "title": "List services",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ServiceList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ServiceCreate": {
+            "main": "./lib/actions/ServiceCreate.js",
+            "title": "Create a service",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ServiceCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ServiceDelete": {
+            "main": "./lib/actions/ServiceDelete.js",
+            "title": "Delete a service",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ServiceDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ServiceInspect": {
+            "main": "./lib/actions/ServiceInspect.js",
+            "title": "Inspect a service",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ServiceInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ServiceLogs": {
+            "main": "./lib/actions/ServiceLogs.js",
+            "title": "Get service logs",
+            "description": "Get `stdout` and `stderr` logs from a service.\n\n**Note**: This endpoint works only for services with the `json-file` or `journald` logging drivers.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ServiceLogs.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "ServiceUpdate": {
+            "main": "./lib/actions/ServiceUpdate.js",
+            "title": "Update a service",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/ServiceUpdate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "Session": {
+            "main": "./lib/actions/Session.js",
+            "title": "Initialize interactive session",
+            "description": "Start a new interactive session with a server. Session allows server to call back to the client for advanced capabilities.\n\n> **Note**: This endpoint is *experimental* and only available if the daemon is started with experimental\n> features enabled. The specifications for this endpoint may still change in a future version of the API.\n\n### Hijacking\n\nThis endpoint hijacks the HTTP connection to HTTP2 transport that allows the client to expose gPRC services on that connection.\n\nFor example, the client sends this request to upgrade the connection:\n\n```\nPOST /session HTTP/1.1\nUpgrade: h2c\nConnection: Upgrade\n```\n\nThe Docker daemon will respond with a `101 UPGRADED` response follow with the raw stream:\n\n```\nHTTP/1.1 101 UPGRADED\nConnection: Upgrade\nUpgrade: h2c\n```\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/Session.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmInspect": {
+            "main": "./lib/actions/SwarmInspect.js",
+            "title": "Inspect swarm",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmInit": {
+            "main": "./lib/actions/SwarmInit.js",
+            "title": "Initialize a new swarm",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmInit.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmJoin": {
+            "main": "./lib/actions/SwarmJoin.js",
+            "title": "Join an existing swarm",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmJoin.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmLeave": {
+            "main": "./lib/actions/SwarmLeave.js",
+            "title": "Leave a swarm",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmLeave.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmUnlock": {
+            "main": "./lib/actions/SwarmUnlock.js",
+            "title": "Unlock a locked manager",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmUnlock.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmUnlockkey": {
+            "main": "./lib/actions/SwarmUnlockkey.js",
+            "title": "Get the unlock key",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmUnlockkey.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SwarmUpdate": {
+            "main": "./lib/actions/SwarmUpdate.js",
+            "title": "Update a swarm",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SwarmUpdate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SystemDataUsage": {
+            "main": "./lib/actions/SystemDataUsage.js",
+            "title": "Get data usage information",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SystemDataUsage.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "TaskList": {
+            "main": "./lib/actions/TaskList.js",
+            "title": "List tasks",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/TaskList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "TaskInspect": {
+            "main": "./lib/actions/TaskInspect.js",
+            "title": "Inspect a task",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/TaskInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "TaskLogs": {
+            "main": "./lib/actions/TaskLogs.js",
+            "title": "Get task logs",
+            "description": "Get `stdout` and `stderr` logs from a task.\n\n**Note**: This endpoint works only for services with the `json-file` or `journald` logging drivers.\n",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/TaskLogs.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "SystemVersion": {
+            "main": "./lib/actions/SystemVersion.js",
+            "title": "Get version",
+            "description": "Returns the version of Docker that is running and various information about the system that Docker is running on.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/SystemVersion.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "VolumeList": {
+            "main": "./lib/actions/VolumeList.js",
+            "title": "List volumes",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/VolumeList.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "VolumeCreate": {
+            "main": "./lib/actions/VolumeCreate.js",
+            "title": "Create a volume",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                },
+                "body_content_type": {
+                    "viewClass": "SelectView",
+                    "label": "Body Content-Type",
+                    "required": true,
+                    "prompt": "Choose a body Content-Type.",
+                    "model": {
+                        "application/json": "application/json",
+                        "text/plain": "text/plain"
+                    }
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/VolumeCreate.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "VolumePrune": {
+            "main": "./lib/actions/VolumePrune.js",
+            "title": "Delete unused volumes",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/VolumePrune.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "VolumeDelete": {
+            "main": "./lib/actions/VolumeDelete.js",
+            "title": "Remove a volume",
+            "description": "Instruct the driver to remove the volume.",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/VolumeDelete.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        },
+        "VolumeInspect": {
+            "main": "./lib/actions/VolumeInspect.js",
+            "title": "Inspect a volume",
+            "fields": {
+                "verbose": {
+                    "viewClass": "CheckBoxView",
+                    "label": "Debug this step (log more data)"
+                }
+            },
+            "metadata": {
+                "in": "./lib/schemas/VolumeInspect.in.json",
+                "out": {
+                    "type": "object"
+                }
+            }
+        }
+    }
+}

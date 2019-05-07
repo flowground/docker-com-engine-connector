@@ -1,0 +1,21 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "v": {
+            "type": "boolean",
+            "default": false
+        },
+        "force": {
+            "type": "boolean",
+            "default": false
+        },
+        "link": {
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

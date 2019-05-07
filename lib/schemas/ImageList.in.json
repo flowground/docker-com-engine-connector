@@ -1,0 +1,16 @@
+{
+    "type": "object",
+    "properties": {
+        "all": {
+            "type": "boolean",
+            "default": false
+        },
+        "filters": {
+            "type": "string"
+        },
+        "digests": {
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "required": true,
+            "type": "string"
+        },
+        "follow": {
+            "type": "boolean",
+            "default": false
+        },
+        "stdout": {
+            "type": "boolean",
+            "default": false
+        },
+        "stderr": {
+            "type": "boolean",
+            "default": false
+        },
+        "since": {
+            "type": "integer",
+            "default": 0
+        },
+        "timestamps": {
+            "type": "boolean",
+            "default": false
+        },
+        "tail": {
+            "type": "string",
+            "default": "all"
+        }
+    }
+}
